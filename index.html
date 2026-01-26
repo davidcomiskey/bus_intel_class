@@ -1,9 +1,225 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Simple Class Exercise</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sticky Notes</title>
+  <style>
+    :root {
+      --bg: #f4f0e7;
+      --paper: #faf7f0;
+      --ink: #2a2a2a;
+      --accent: #3b5b3f;
+      --shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", "Lucida Handwriting", cursive;
+      background: radial-gradient(circle at 20% 20%, #fff7dd, #f0ead8 40%, #e6dcc7 100%);
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--paper);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+    #newNoteBtn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #newNoteBtn:active { transform: translateY(1px); }
+    #board {
+      position: relative;
+      height: calc(100vh - 56px);
+      padding: 16px;
+    }
+    .note {
+      position: absolute;
+      width: 220px;
+      min-height: 160px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 30px 12px 34px 12px;
+      user-select: none;
+    }
+    .note .bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      border-radius: 8px 8px 0 0;
+      background: rgba(0,0,0,0.08);
+      cursor: grab;
+    }
+    .note .bar:active { cursor: grabbing; }
+    .note textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 130px;
+      border: none;
+      outline: none;
+      resize: none;
+      background: transparent;
+      font-size: 14px;
+      line-height: 1.4;
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", "Lucida Handwriting", cursive;
+      color: var(--ink);
+      cursor: text;
+    }
+    .note .delete {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      background: rgba(0,0,0,0.15);
+      border: none;
+      color: #fff;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .note .delete:hover { background: rgba(0,0,0,0.35); }
+  </style>
 </head>
 <body>
-    <h1>Business Intelligence Test</h1>
+  <header>
+    <h1>Sticky Notes</h1>
+    <button id="newNoteBtn">New note</button>
+  </header>
+  <main id="board"></main>
+
+  <script>
+    const STORAGE_KEY = "sticky-notes-v1";
+    const COLORS = ["#fff3a6", "#ffe0a6", "#d5f5c4", "#cde8ff", "#f7c6f7"]; 
+    const board = document.getElementById("board");
+    const newBtn = document.getElementById("newNoteBtn");
+
+    let notes = [];
+    let drag = null;
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        notes = JSON.parse(raw) || [];
+      } catch {
+        notes = [];
+      }
+    }
+
+    function createNote(data) {
+      const noteEl = document.createElement("div");
+      noteEl.className = "note";
+      noteEl.style.left = data.x + "px";
+      noteEl.style.top = data.y + "px";
+      noteEl.style.background = data.color;
+      noteEl.dataset.id = data.id;
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+
+      const area = document.createElement("textarea");
+      area.value = data.text || "";
+      area.addEventListener("input", () => {
+        const n = notes.find(n => n.id === data.id);
+        if (n) {
+          n.text = area.value;
+          save();
+        }
+      });
+
+      const del = document.createElement("button");
+      del.className = "delete";
+      del.textContent = "×";
+      del.addEventListener("click", () => removeNote(data.id));
+
+      noteEl.appendChild(bar);
+      noteEl.appendChild(area);
+      noteEl.appendChild(del);
+
+      bar.addEventListener("pointerdown", (e) => {
+        noteEl.setPointerCapture(e.pointerId);
+        const rect = noteEl.getBoundingClientRect();
+        drag = {
+          id: data.id,
+          offsetX: e.clientX - rect.left,
+          offsetY: e.clientY - rect.top
+        };
+      });
+
+      noteEl.addEventListener("pointermove", (e) => {
+        if (!drag || drag.id !== data.id) return;
+        const newX = Math.max(0, e.clientX - drag.offsetX);
+        const newY = Math.max(0, e.clientY - drag.offsetY - 56);
+        noteEl.style.left = newX + "px";
+        noteEl.style.top = newY + "px";
+      });
+
+      noteEl.addEventListener("pointerup", (e) => {
+        if (!drag || drag.id !== data.id) return;
+        const n = notes.find(n => n.id === data.id);
+        if (n) {
+          n.x = parseInt(noteEl.style.left, 10) || 0;
+          n.y = parseInt(noteEl.style.top, 10) || 0;
+          save();
+        }
+        drag = null;
+        try { noteEl.releasePointerCapture(e.pointerId); } catch {}
+      });
+
+      board.appendChild(noteEl);
+    }
+
+    function addNote() {
+      const id = "n" + Date.now() + Math.random().toString(16).slice(2);
+      const note = {
+        id,
+        text: "",
+        x: 20 + notes.length * 15,
+        y: 20 + notes.length * 15,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)]
+      };
+      notes.push(note);
+      save();
+      createNote(note);
+    }
+
+    function removeNote(id) {
+      notes = notes.filter(n => n.id !== id);
+      save();
+      const el = board.querySelector(`[data-id="${id}"]`);
+      if (el) el.remove();
+    }
+
+    function init() {
+      load();
+      notes.forEach(createNote);
+    }
+
+    newBtn.addEventListener("click", addNote);
+    init();
+  </script>
 </body>
 </html>
