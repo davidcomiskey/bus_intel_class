@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Novo Nordisk — Executive Slide</title>
+  <title>Novo Nordisk — Investor Snapshot</title>
   <style>
     :root{
       /* Novo Nordisk core blue */
@@ -58,15 +58,19 @@
       align-items:center;
     }
     .logo{
-      width: 34px;
+      width: 52px;
       height: 34px;
       border-radius: 10px;
       background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.25);
       display:grid;
       place-items:center;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      padding: 4px 6px;
+    }
+    .logo svg{
+      width: 100%;
+      height: 100%;
+      display:block;
     }
     .title{
       line-height: 1.1;
@@ -110,8 +114,9 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.25fr 0.95fr;
-      gap: 14px;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 16px;
+      align-items:start;
     }
 
     .card{
@@ -196,11 +201,116 @@
       gap: 10px;
     }
 
+    .stance{
+      background: linear-gradient(135deg, rgba(0,90,210,0.12), rgba(0,90,210,0.02));
+      border: 1px solid rgba(0,90,210,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .stance::after{
+      content:"";
+      position:absolute;
+      right:-40px;
+      top:-40px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(0,90,210,0.28), transparent 60%);
+    }
+    .stance .headline{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .stance .headline .label{
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .stance .headline .rating{
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--nn-blue);
+      letter-spacing: 0.02em;
+    }
+    .stance p{
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.35;
+      color: var(--ink);
+    }
+    .stance .sub{
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .stance .meta{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .meta .pill{
+      border-radius: 999px;
+      border: 1px solid rgba(0,90,210,0.2);
+      padding: 6px 10px;
+      font-size: 12px;
+      text-align:center;
+      background: rgba(255,255,255,0.8);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .signals{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .signal{
+      border-radius: 14px;
+      padding: 10px;
+      border: 1px solid var(--stroke);
+      background: rgba(11,18,32,0.02);
+    }
+    .signal .label{
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .signal .value{
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .full-width{
+      grid-column: 1 / -1;
+    }
+
     .mini{
       border: 1px solid var(--stroke);
       border-radius: 14px;
       padding: 12px;
       background: #fff;
+    }
+    .activity .mini{
+      border: 1px solid rgba(0,90,210,0.22);
+      background: linear-gradient(180deg, rgba(0,90,210,0.08), rgba(255,255,255,0.95));
+      box-shadow: 0 8px 16px rgba(0,90,210,0.08);
+    }
+    .activity .mini .head .tag{
+      border-color: rgba(0,90,210,0.25);
+      background: rgba(0,90,210,0.08);
+      color: var(--nn-blue);
+      font-weight: 700;
+    }
+    .activity .mini .head .t{
+      color: var(--ink);
     }
     .mini .head{
       display:flex;
@@ -248,6 +358,9 @@
       .badge{ min-width: auto; }
       .kpi-row{ grid-template-columns: 1fr; }
       .two-col{ grid-template-columns: 1fr; }
+      .stance .meta{ grid-template-columns: 1fr; }
+      .signals{ grid-template-columns: 1fr; }
+      .full-width{ grid-column: auto; }
     }
   </style>
 </head>
@@ -256,9 +369,17 @@
   <main class="slide" role="main">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">NN</div>
+        <div class="logo" aria-label="Novo Nordisk logo">
+          <svg viewBox="0 0 120 80" role="img" aria-hidden="true">
+            <rect width="120" height="80" rx="10" fill="#FFFFFF" opacity="0.95"/>
+            <path d="M31 48c8-12 20-20 35-22 11-2 20 1 27 6" fill="none" stroke="#005AD2" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="78" cy="28" r="6" fill="#005AD2"/>
+            <path d="M44 56c12 6 29 6 45-2" fill="none" stroke="#005AD2" stroke-width="5" stroke-linecap="round"/>
+            <text x="12" y="72" font-size="14" font-family="Arial, sans-serif" font-weight="700" fill="#005AD2">NOVO NORDISK</text>
+          </svg>
+        </div>
         <div class="title">
-          <div class="h">Novo Nordisk — Executive Snapshot</div>
+          <div class="h">Novo Nordisk — Investor Snapshot</div>
           <div class="s">Earnings + market signal → investment stance</div>
         </div>
       </div>
@@ -298,21 +419,41 @@
             </div>
           </div>
 
-          <div style="height:12px;"></div>
+          <div style="height:14px;"></div>
 
-          <div class="callout">
-            <div class="dot"></div>
-            <div>
-              <p><b>Why HOLD:</b> FY2024 execution is strong, but the near-term outlook turned negative — the market is now pricing a tougher 2026.</p>
-              <div class="sub">
-                Decision logic: avoid “BUY” until pricing + competitive dynamics stabilise; avoid “SELL” unless you believe the outlook decline becomes structural and multi-year.
-              </div>
+          <div class="signals">
+            <div class="signal">
+              <div class="label">Momentum</div>
+              <div class="value">FY2024 execution +26% CER</div>
+            </div>
+            <div class="signal">
+              <div class="label">Pressure</div>
+              <div class="value">U.S. pricing reset risk</div>
+            </div>
+            <div class="signal">
+              <div class="label">Narrative</div>
+              <div class="value">Competition raising bar</div>
             </div>
           </div>
         </div>
 
-        <!-- RIGHT: Threat/Opportunity + Competitor -->
-        <div class="card">
+        <!-- RIGHT: Stance -->
+        <div class="card stance">
+          <div class="headline">
+            <div class="label">Investment stance</div>
+            <div class="rating">HOLD</div>
+          </div>
+          <p><b>Why HOLD:</b> FY2024 execution is strong, but the near-term outlook turned negative — the market is now pricing a tougher 2026.</p>
+          <p class="sub">Decision logic: avoid “BUY” until pricing + competitive dynamics stabilise; avoid “SELL” unless you believe the outlook decline becomes structural and multi-year.</p>
+          <div class="meta">
+            <div class="pill">Risk: elevated</div>
+            <div class="pill">Signal: outlook reset</div>
+            <div class="pill">Timing: next 1–2 qtrs</div>
+          </div>
+        </div>
+
+        <!-- FULL WIDTH: Threat/Opportunity + Competitor -->
+        <div class="card full-width activity">
           <h3>Last 60 days — material development</h3>
 
           <div class="mini" style="margin-bottom:10px;">
