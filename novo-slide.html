@@ -197,11 +197,6 @@
       gap: 10px;
     }
 
-    .stack{
-      display:grid;
-      gap: 14px;
-    }
-
     .stance{
       background: linear-gradient(135deg, rgba(0,90,210,0.12), rgba(0,90,210,0.02));
       border: 1px solid rgba(0,90,210,0.25);
@@ -289,6 +284,10 @@
       color: var(--ink);
     }
 
+    .full-width{
+      grid-column: 1 / -1;
+    }
+
     .mini{
       border: 1px solid var(--stroke);
       border-radius: 14px;
@@ -343,6 +342,7 @@
       .two-col{ grid-template-columns: 1fr; }
       .stance .meta{ grid-template-columns: 1fr; }
       .signals{ grid-template-columns: 1fr; }
+      .full-width{ grid-column: auto; }
     }
   </style>
 </head>
@@ -411,19 +411,29 @@
           </div>
         </div>
 
-        <!-- RIGHT: Stance + Threat/Opportunity + Competitor -->
-        <div class="stack">
-          <div class="card stance">
-            <div class="headline">
-              <div class="label">Investment stance</div>
-              <div class="rating">HOLD</div>
-            </div>
-            <p><b>Why HOLD:</b> FY2024 execution is strong, but the near-term outlook turned negative — the market is now pricing a tougher 2026.</p>
-            <p class="sub">Decision logic: avoid “BUY” until pricing + competitive dynamics stabilise; avoid “SELL” unless you believe the outlook decline becomes structural and multi-year.</p>
-            <div class="meta">
-              <div class="pill">Risk: elevated</div>
-              <div class="pill">Signal: outlook reset</div>
-              <div class="pill">Timing: next 1–2 qtrs</div>
+        <!-- RIGHT: Stance -->
+        <div class="card stance">
+          <div class="headline">
+            <div class="label">Investment stance</div>
+            <div class="rating">HOLD</div>
+          </div>
+          <p><b>Why HOLD:</b> FY2024 execution is strong, but the near-term outlook turned negative — the market is now pricing a tougher 2026.</p>
+          <p class="sub">Decision logic: avoid “BUY” until pricing + competitive dynamics stabilise; avoid “SELL” unless you believe the outlook decline becomes structural and multi-year.</p>
+          <div class="meta">
+            <div class="pill">Risk: elevated</div>
+            <div class="pill">Signal: outlook reset</div>
+            <div class="pill">Timing: next 1–2 qtrs</div>
+          </div>
+        </div>
+
+        <!-- FULL WIDTH: Threat/Opportunity + Competitor -->
+        <div class="card full-width">
+          <h3>Last 60 days — material development</h3>
+
+          <div class="mini" style="margin-bottom:10px;">
+            <div class="head">
+              <div class="t">2026 outlook shock (company guidance)</div>
+              <div class="tag">4 Feb 2026</div>
             </div>
           </div>
 
