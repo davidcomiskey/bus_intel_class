@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WBD Strategic Dashboard | Q3 2025 / Q1 2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#141b33; --muted:#9aa6c7; --text:#f3f6ff; --good:#21c17a; --bad:#ff6b6b; --accent:#5aa3ff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
+    .header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+    .title h1{margin:0 0 6px;font-size:28px}
+    .title p{margin:0;color:var(--muted)}
+    .meta{font-size:13px;color:var(--muted);text-align:right}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 18px}
+    .card{background:var(--card);border:1px solid #243057;border-radius:14px;padding:14px}
+    .kpi-label{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .kpi-value{font-size:26px;font-weight:700;line-height:1.1}
+    .kpi-delta{margin-top:6px;font-size:13px}
+    .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--muted)}
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .chart-box{background:var(--card);border:1px solid #243057;border-radius:14px;padding:12px}
+    .chart-title{font-size:14px;color:var(--muted);margin:0 0 10px}
+    .issues{margin-top:12px;background:var(--card);border:1px solid #243057;border-radius:14px;padding:14px}
+    .issues h3{margin:0 0 8px}
+    .issues ul{margin:8px 0 0 18px}
+    .issues li{margin:8px 0;line-height:1.35}
+    .footer{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.35}
+    @media (max-width:960px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .charts{grid-template-columns:1fr}
+      .meta{text-align:left}
+      .header{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="title">
+        <h1>Warner Bros. Discovery (WBD) — Strategic Board Dashboard</h1>
+        <p>Lens: Board/Strategic | Current Quarter Focus: Q3 2025 / Q1 2026 priorities</p>
+      </div>
+      <div class="meta">
+        <div>Student ID: 23204117</div>
+        <div>Updated: 07/02/2026</div>
+      </div>
+    </div>
+
+    <section class="grid">
+      <div class="card">
+        <div class="kpi-label">Total Adjusted EBITDA (Q3 2025)</div>
+        <div class="kpi-value">$2,470m</div>
+        <div class="kpi-delta up">▲ QoQ: +$517m (vs $1,953m) | YoY: +$57m (vs $2,413m)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Free Cash Flow (Q3 2025)</div>
+        <div class="kpi-value">$701m</div>
+        <div class="kpi-delta flat">QoQ: -$1m (vs $702m) | YoY: +$69m (vs $632m)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Global Streaming Subscribers (Q3 2025)</div>
+        <div class="kpi-value">128.0m</div>
+        <div class="kpi-delta up">▲ QoQ: +2.3m (vs 125.7m) | YoY: +17.5m (vs 110.5m)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Net Leverage (Q3 2025)</div>
+        <div class="kpi-value">3.3x</div>
+        <div class="kpi-delta up">Debt repaid in quarter: $1.2bn</div>
+      </div>
+    </section>
+
+    <section class="charts">
+      <div class="chart-box">
+        <p class="chart-title">Adjusted EBITDA Trend (Last 4 Quarters)</p>
+        <canvas id="ebitdaChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <p class="chart-title">Global Streaming Subscribers Trend (Last 4 Quarters)</p>
+        <canvas id="subsChart"></canvas>
+      </div>
+    </section>
+
+    <section class="issues">
+      <h3>Current Issues Requiring Board Attention (Last 90 Days)</h3>
+      <ul>
+        <li><b>Regulatory execution risk:</b> DOJ scrutiny of the proposed transaction increases timeline and closing uncertainty.</li>
+        <li><b>Transaction governance:</b> all-cash structure and April 2026 vote require tight shareholder and proxy execution.</li>
+        <li><b>Post-separation capital structure:</b> debt allocation enabling Discovery Global viability while protecting equity value.</li>
+        <li><b>Core operating pressure:</b> linear TV decline persists while streaming growth/profitability must accelerate.</li>
+      </ul>
+    </section>
+
+    <div class="footer">
+      <b>Sources:</b> WBD Q3 2025 earnings report/shareholder letter/call extracts; Jan 2026 transaction update; Feb 2026 regulatory coverage.
+      
+    </div>
+  </div>
+
+  <script>
+    // Replace with your exact quarter labels + values from source pack
+    const qLabels = ["Q4'24","Q1'25","Q2'25","Q3'25"];
+
+    // Keep Q2/Q3 exact from your NotebookLM extract; fill Q4/Q1 from your notes
+    const ebitdaData = [2722, 2105, 1953, 2470]; // TODO: replace first two with exact values
+    const subsData   = [116.9, 122.3, 125.7, 128.0]; // TODO: replace first two with exact values
+
+    new Chart(document.getElementById("ebitdaChart"), {
+      type: "line",
+      data: {
+        labels: qLabels,
+        datasets: [{
+          label: "Adjusted EBITDA ($m)",
+          data: ebitdaData,
+          borderWidth: 2,
+          tension: 0.25
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+
+    new Chart(document.getElementById("subsChart"), {
+      type: "line",
+      data: {
+        labels: qLabels,
+        datasets: [{
+          label: "Subscribers (m)",
+          data: subsData,
+          borderWidth: 2,
+          tension: 0.25
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+  </script>
+</body>
+</html>
