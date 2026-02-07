@@ -4,42 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WBD Strategic Dashboard | Q3 2025 / Q1 2026</title>
+
+  <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PDF export deps (client-side) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
   <style>
     :root{
-      --bg:#0b1020; --card:#141b33; --muted:#9aa6c7; --text:#f3f6ff; --good:#21c17a; --bad:#ff6b6b; --accent:#5aa3ff;
+      --bg:#0b1020;
+      --card:#141b33;
+      --muted:#c9d4f2;     /* LIGHTER for contrast */
+      --text:#f3f6ff;
+      --good:#21c17a;
+      --bad:#ff6b6b;
+      --accent:#7fb5ff;    /* a touch brighter */
+      --border:#2a3764;    /* slightly brighter border */
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
     .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
+
+    /* Top bar */
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand img{
+      width:44px;height:44px;border-radius:10px;object-fit:contain;
+      background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.25);
+      padding:6px;
+    }
+    .brand .brandtext{min-width:0}
+    .brand .brandtext .small{color:var(--muted);font-size:12px;margin:0}
+    .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn{
+      appearance:none;border:1px solid rgba(255,255,255,0.18);
+      background:rgba(255,255,255,0.06);
+      color:var(--text); padding:10px 12px;border-radius:12px;
+      font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn:hover{border-color:rgba(255,255,255,0.28);background:rgba(255,255,255,0.09)}
+    .btn:disabled{opacity:0.6;cursor:not-allowed}
+
     .header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
     .title h1{margin:0 0 6px;font-size:28px}
     .title p{margin:0;color:var(--muted)}
     .meta{font-size:13px;color:var(--muted);text-align:right}
+
     .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 18px}
-    .card{background:var(--card);border:1px solid #243057;border-radius:14px;padding:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
     .kpi-label{font-size:12px;color:var(--muted);margin-bottom:8px}
     .kpi-value{font-size:26px;font-weight:700;line-height:1.1}
-    .kpi-delta{margin-top:6px;font-size:13px}
+    .kpi-delta{margin-top:6px;font-size:13px;color:var(--text)}
     .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--muted)}
+
     .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .chart-box{background:var(--card);border:1px solid #243057;border-radius:14px;padding:12px}
+    .chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px}
     .chart-title{font-size:14px;color:var(--muted);margin:0 0 10px}
-    .issues{margin-top:12px;background:var(--card);border:1px solid #243057;border-radius:14px;padding:14px}
+
+    .issues{margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
     .issues h3{margin:0 0 8px}
     .issues ul{margin:8px 0 0 18px}
     .issues li{margin:8px 0;line-height:1.35}
+
     .footer{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.35}
+
+    /* PDF mode: simplify shadows/borders and ensure white background */
+    .pdf-mode body{background:#ffffff}
+    .pdf-mode .wrap{max-width:1100px}
+    .pdf-mode .card,.pdf-mode .chart-box,.pdf-mode .issues{
+      background:#ffffff !important; color:#111 !important; border:1px solid #d0d7e6 !important;
+    }
+    .pdf-mode .title p,.pdf-mode .meta,.pdf-mode .kpi-label,.pdf-mode .chart-title,.pdf-mode .footer{
+      color:#2b3a55 !important;
+    }
+    .pdf-mode .btn{display:none !important;} /* hide buttons in exported PDF */
+    .pdf-mode .kpi-delta{color:#111 !important;}
+    .pdf-mode .up{color:#0a7a4b !important;}
+    .pdf-mode .down{color:#b42323 !important;}
+
     @media (max-width:960px){
       .grid{grid-template-columns:repeat(2,1fr)}
       .charts{grid-template-columns:1fr}
       .meta{text-align:left}
       .header{flex-direction:column}
+      .topbar{flex-direction:column;align-items:flex-start}
+      .actions{width:100%}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <!-- Everything inside #dashboard will be exported -->
+  <div id="dashboard" class="wrap">
+
+    <!-- Top bar with logo + PDF button -->
+    <div class="topbar">
+      <div class="brand">
+        <!-- Place your logo file next to this HTML as: logo.png -->
+        <img id="logoImg" src="https://davidcomiskey.github.io/bus_intel_class/500px-Warner_Bros._Discovery_(symbol).svg.png" alt="WBD logo" onerror="this.style.display='none'">
+        <div class="brandtext">
+        
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnPdf" class="btn" type="button" title="Download a PDF snapshot of this dashboard">
+          ⤓ Download PDF
+        </button>
+      </div>
+    </div>
+
     <div class="header">
       <div class="title">
         <h1>Warner Bros. Discovery (WBD) — Strategic Board Dashboard</h1>
@@ -97,19 +171,47 @@
 
     <div class="footer">
       <b>Sources:</b> WBD quarterly earnings releases/shareholder letters (Q4’24, Q1’25, Q2’25, Q3’25) and Q3’25 earnings call materials.
-      
     </div>
   </div>
 
   <script>
-    // Replace with your exact quarter labels + values from source pack
+    // ===== Chart data =====
     const qLabels = ["Q4'24","Q1'25","Q2'25","Q3'25"];
+    const ebitdaData = [2722, 2105, 1953, 2470];
+    const subsData   = [116.9, 122.3, 125.7, 128.0];
 
-    // Keep Q2/Q3 exact from your NotebookLM extract; fill Q4/Q1 from your notes
-    const ebitdaData = [2722, 2105, 1953, 2470]; // TODO: replace first two with exact values
-    const subsData   = [116.9, 122.3, 125.7, 128.0]; // TODO: replace first two with exact values
+    // ===== Chart styling for contrast =====
+    const axisColor = "#F3F6FF";
+    const gridColor = "rgba(243,246,255,0.14)";
+    const legendColor = "#F3F6FF";
 
-    new Chart(document.getElementById("ebitdaChart"), {
+    Chart.defaults.color = axisColor; // affects legend labels etc. in many cases
+
+    const commonOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: legendColor }
+        },
+        tooltip: {
+          enabled: true
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: axisColor },
+          grid: { color: gridColor }
+        },
+        y: {
+          beginAtZero: false,
+          ticks: { color: axisColor },
+          grid: { color: gridColor }
+        }
+      }
+    };
+
+    const ebitdaChart = new Chart(document.getElementById("ebitdaChart"), {
       type: "line",
       data: {
         labels: qLabels,
@@ -117,17 +219,14 @@
           label: "Adjusted EBITDA ($m)",
           data: ebitdaData,
           borderWidth: 2,
-          tension: 0.25
+          tension: 0.25,
+          pointRadius: 3
         }]
       },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: true } },
-        scales: { y: { beginAtZero: false } }
-      }
+      options: commonOptions
     });
 
-    new Chart(document.getElementById("subsChart"), {
+    const subsChart = new Chart(document.getElementById("subsChart"), {
       type: "line",
       data: {
         labels: qLabels,
@@ -135,15 +234,76 @@
           label: "Subscribers (m)",
           data: subsData,
           borderWidth: 2,
-          tension: 0.25
+          tension: 0.25,
+          pointRadius: 3
         }]
       },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: true } },
-        scales: { y: { beginAtZero: false } }
-      }
+      options: commonOptions
     });
+
+    // ===== PDF Export =====
+    const btnPdf = document.getElementById("btnPdf");
+
+    async function downloadPdf() {
+      btnPdf.disabled = true;
+      btnPdf.textContent = "Generating PDF…";
+
+      // Ensure charts render fully before capture
+      ebitdaChart.update();
+      subsChart.update();
+
+      // Switch to PDF-friendly mode (white background, hide button)
+      document.documentElement.classList.add("pdf-mode");
+
+      // Wait a tick for CSS to apply
+      await new Promise(r => setTimeout(r, 150));
+
+      const dashboardEl = document.getElementById("dashboard");
+
+      // Higher scale -> sharper PDF (but heavier)
+      const canvas = await html2canvas(dashboardEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff"
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Fit image to page width, keep aspect ratio
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgWidth = pageWidth;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+      let y = 0;
+      let remaining = imgHeight;
+
+      // First page
+      pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
+      remaining -= pageHeight;
+
+      // Extra pages if needed
+      while (remaining > 0) {
+        pdf.addPage();
+        y = -(imgHeight - remaining);
+        pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
+        remaining -= pageHeight;
+      }
+
+      pdf.save("WBD_Strategic_Dashboard.pdf");
+
+      // Restore UI mode
+      document.documentElement.classList.remove("pdf-mode");
+      btnPdf.disabled = false;
+      btnPdf.textContent = "⤓ Download PDF";
+    }
+
+    btnPdf.addEventListener("click", downloadPdf);
   </script>
 </body>
 </html>
