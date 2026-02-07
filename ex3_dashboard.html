@@ -37,6 +37,14 @@
     }
     .brand .brandtext{min-width:0}
     .brand .brandtext .small{color:var(--muted);font-size:12px;margin:0}
+    .brand img{
+  display:block;
+  width:auto;
+  height:40px;          /* fixed height = consistent header */
+  max-width:140px;      /* prevents “exploding” wide logos */
+  object-fit:contain;   /* keep aspect ratio */
+  flex:0 0 auto;        /* stops flexbox stretching it */
+}
     .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .btn{
       appearance:none;border:1px solid rgba(255,255,255,0.18);
